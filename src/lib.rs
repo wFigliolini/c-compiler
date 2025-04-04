@@ -1,3 +1,5 @@
+use std::fs;
+
 pub struct Config {
     pub file_path: String,
 }
@@ -14,8 +16,9 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), &'static str> {
-    // Placeholder for the actual compilation logic
-    println!("Compiling file: {}", config.file_path);
+    let _file_content =
+        fs::read_to_string(&config.file_path).map_err(|_| "Failed to read the file")?;
+
     Ok(())
 }
 
