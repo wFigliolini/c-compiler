@@ -43,7 +43,7 @@ mod tests {
     #[test]
     fn test_run() {
         let config = Config {
-            file_path: "test_file.c".to_string(),
+            file_path: "test_files/test_file_1.c".to_string(),
         };
         let result = run(config);
         assert!(result.is_ok());
