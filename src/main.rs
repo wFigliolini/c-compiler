@@ -1,7 +1,4 @@
-use std::{
-    env,
-    process
-};
+use std::{env, process};
 
 use c_compiler::Config;
 
