@@ -24,7 +24,6 @@ pub fn run(config: Config) -> Result<(), &'static str> {
     Ok(())
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -60,5 +59,4 @@ mod tests {
         let result = run(config);
         assert!(result.is_err());
     }
-
 }

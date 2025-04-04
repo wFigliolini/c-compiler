@@ -1,5 +1,5 @@
 use std::fmt;
-enum Token{
+enum Token {
     Keyword(String),
     Identifier(String),
     Literal(String),
@@ -49,16 +49,16 @@ impl fmt::Debug for Token {
     }
 }
 
-fn tokenize( input: &str ) -> Result<Vec<Token>, &'static str> {
+fn tokenize(input: &str) -> Result<Vec<Token>, &'static str> {
     let mut tokens = Vec::new();
- 
+
     Ok(tokens)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_tokenize() {
         let input = "int main() { return 0; }";
