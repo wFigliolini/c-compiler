@@ -13,6 +13,12 @@ impl Config {
     }
 }
 
+pub fn run(config: Config) -> Result<(), &'static str> {
+    // Placeholder for the actual compilation logic
+    println!("Compiling file: {}", config.file_path);
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -29,5 +35,23 @@ mod tests {
         let args = vec!["program_name".to_string()];
         let config = Config::build(args.into_iter());
         assert!(config.is_err());
+    }
+
+    #[test]
+    fn test_run() {
+        let config = Config {
+            file_path: "test_file.c".to_string(),
+        };
+        let result = run(config);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_run_no_file_path() {
+        let config = Config {
+            file_path: "".to_string(),
+        };
+        let result = run(config);
+        assert!(result.is_err());
     }
 }
