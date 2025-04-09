@@ -98,6 +98,8 @@ fn process_current_token(
         tokens.push(Token::new("identifier", current_token.clone()));
     } else if is_literal(current_token) {
         tokens.push(Token::new("literal", current_token.clone()));
+    } else if is_string_literal(current_token) {
+        tokens.push(Token::new("string_literal", current_token.clone()));
     } else {
         return Err("Unknown token");
     }
@@ -131,15 +133,15 @@ fn is_identifier(token: &str) -> bool {
 }
 
 fn is_literal(token: &str) -> bool {
-    // Check if the token is a number (integer or float)
     if token.parse::<f64>().is_ok() {
         return true;
     }
-    // Check if the token is a string literal
-    if token.starts_with('"') && token.ends_with('"') {
-        return true;
-    }
+
     false
+}
+
+fn is_string_literal(token: &str) -> bool {
+    token.starts_with('"') && token.ends_with('"')
 }
 
 #[cfg(test)]
@@ -156,7 +158,7 @@ mod tests {
     fn test_is_identifier() {
         assert!(is_identifier("foo"));
         assert!(is_identifier("_foo"));
-        assert!(is_identifier("bar123"));
+        assert!(is_identifier("bar_123"));
         assert!(!is_identifier("123foo"));
     }
 
@@ -164,9 +166,17 @@ mod tests {
     fn test_is_literal() {
         assert!(is_literal("123"));
         assert!(is_literal("0.5"));
-        assert!(is_literal("\"hello\""));
+        assert!(!is_literal("\"hello\""));
         assert!(!is_literal("foo"));
         assert!(!is_literal("123foo"));
+    }
+
+    #[test]
+    fn test_is_string_literal() {
+        assert!(is_string_literal("\"hello\""));
+        assert!(!is_string_literal("hello"));
+        assert!(!is_string_literal("\"hello"));
+        assert!(!is_string_literal("hello\""));
     }
 
     #[test]
