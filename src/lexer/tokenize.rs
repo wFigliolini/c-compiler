@@ -55,7 +55,10 @@ fn tokenize(input: &str) -> Result<Vec<Token>, &'static str> {
     for c in input.chars() {
         if c.is_whitespace() {
             if !current_token.is_empty() {
-                process_current_token(&mut current_token, &mut tokens)?;
+                match process_current_token(&mut current_token, &mut tokens) {
+                    Ok(_) => {}
+                    Err(e) => return Err(e),
+                }
             }
             continue;
         }
@@ -72,7 +75,10 @@ fn tokenize(input: &str) -> Result<Vec<Token>, &'static str> {
             }
         } else if c == ';' || c == '{' || c == '}' || c == '(' || c == ')' {
             if !current_token.is_empty() {
-                process_current_token(&mut current_token, &mut tokens)?;
+                match process_current_token(&mut current_token, &mut tokens) {
+                    Ok(_) => {}
+                    Err(e) => return Err(e),
+                }
             }
             tokens.push(Token::new("separator", c.to_string()));
         } else {
