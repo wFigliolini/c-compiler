@@ -51,13 +51,115 @@ impl fmt::Debug for Token {
 
 fn tokenize(input: &str) -> Result<Vec<Token>, &'static str> {
     let mut tokens = Vec::new();
-
+    let mut current_token = String::new();
+    for c in input.chars() {
+        if c.is_whitespace() {
+            if !current_token.is_empty() {
+                process_current_token(&mut current_token, &mut tokens)?;
+            }
+            continue;
+        }
+        if c.is_alphanumeric() || c == '_' || c == '.' {
+            current_token.push(c);
+        } else if c == '"' {
+            //String literal found, start subloop until closing quote is found
+            current_token.push(c);
+            while let Some(next_c) = input.chars().next() {
+                current_token.push(next_c);
+                if next_c == '"' {
+                    break;
+                }
+            }
+        } else if c == ';' || c == '{' || c == '}' || c == '(' || c == ')' {
+            if !current_token.is_empty() {
+                process_current_token(&mut current_token, &mut tokens)?;
+            }
+            tokens.push(Token::new("separator", c.to_string()));
+        } else {
+            return Err("Unknown token");
+        }
+    }
     Ok(tokens)
+}
+
+fn process_current_token(
+    current_token: &mut String,
+    tokens: &mut Vec<Token>,
+) -> Result<(), &'static str> {
+    if is_keyword(current_token) {
+        tokens.push(Token::new("keyword", current_token.clone()));
+    } else if is_identifier(current_token) {
+        tokens.push(Token::new("identifier", current_token.clone()));
+    } else if is_literal(current_token) {
+        tokens.push(Token::new("literal", current_token.clone()));
+    } else {
+        return Err("Unknown token");
+    }
+    current_token.clear();
+    Ok(())
+}
+
+fn is_keyword(token: &str) -> bool {
+    // full list of C keywords from R&K C book
+    let keywords = [
+        "auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else",
+        "enum", "extern", "float", "for", "goto", "if", "int", "long", "register", "return",
+        "short", "signed", "sizeof", "static", "struct", "switch", "typedef", "union", "unsigned",
+        "void", "volatile", "while",
+    ];
+    keywords.contains(&token)
+}
+
+fn is_identifier(token: &str) -> bool {
+    // Identifiers must start with a letter or underscore, followed by letters, digits, or underscores
+    let first_char = token.chars().next().unwrap();
+    if !first_char.is_alphabetic() && first_char != '_' {
+        return false;
+    }
+    for c in token.chars().skip(1) {
+        if !c.is_alphanumeric() && c != '_' {
+            return false;
+        }
+    }
+    true
+}
+
+fn is_literal(token: &str) -> bool {
+    // Check if the token is a number (integer or float)
+    if token.parse::<f64>().is_ok() {
+        return true;
+    }
+    // Check if the token is a string literal
+    if token.starts_with('"') && token.ends_with('"') {
+        return true;
+    }
+    false
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_is_keyword() {
+        assert!(is_keyword("int"));
+        assert!(is_keyword("return"));
+        assert!(!is_keyword("foo"));
+    }
+    #[test]
+    fn test_is_identifier() {
+        assert!(is_identifier("foo"));
+        assert!(is_identifier("_foo"));
+        assert!(is_identifier("bar123"));
+        assert!(!is_identifier("123foo"));
+    }
+
+    #[test]
+    fn test_is_literal() {
+        assert!(is_literal("123"));
+        assert!(is_literal("0.5"));
+        assert!(!is_literal("foo"));
+    }
 
     #[test]
     fn test_tokenize() {
