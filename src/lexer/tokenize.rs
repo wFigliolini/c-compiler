@@ -164,7 +164,9 @@ mod tests {
     fn test_is_literal() {
         assert!(is_literal("123"));
         assert!(is_literal("0.5"));
+        assert!(is_literal("\"hello\""));
         assert!(!is_literal("foo"));
+        assert!(!is_literal("123foo"));
     }
 
     #[test]
