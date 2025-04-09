@@ -149,6 +149,55 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_token_new_keyword() {
+        let token = Token::new("keyword", "int".to_string());
+        assert_eq!(token, Token::Keyword("int".to_string()));
+    }
+
+    #[test]
+    fn test_token_new_identifier() {
+        let token = Token::new("identifier", "foo".to_string());
+        assert_eq!(token, Token::Identifier("foo".to_string()));
+    }
+
+    #[test]
+    fn test_token_new_literal() {
+        let token = Token::new("literal", "123".to_string());
+        assert_eq!(token, Token::Literal("123".to_string()));
+    }
+
+    #[test]
+    fn test_token_new_string_literal() {
+        let token = Token::new("string_literal", "\"hello\"".to_string());
+        assert_eq!(token, Token::StringLiteral("\"hello\"".to_string()));
+    }
+    #[test]
+    fn test_token_new_operator() {
+        let token = Token::new("operator", "+".to_string());
+        assert_eq!(token, Token::Operator("+".to_string()));
+    }
+
+    #[test]
+    fn test_token_new_separator() {
+        let token = Token::new("separator", ";".to_string());
+        assert_eq!(token, Token::Separator(";".to_string()));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_invalid_token() {
+        let _result = Token::new("invalid", "foo".to_string());
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_invalid_token_comparison() {
+        let token1 = Token::new("keyword", "int".to_string());
+        let token2 = Token::new("identifier", "foo".to_string());
+        assert_eq!(token1, token2);
+    }
+
+    #[test]
     fn test_is_keyword() {
         assert!(is_keyword("int"));
         assert!(is_keyword("return"));
@@ -159,6 +208,7 @@ mod tests {
         assert!(is_identifier("foo"));
         assert!(is_identifier("_foo"));
         assert!(is_identifier("bar_123"));
+        assert!(!is_identifier("foo&bar"));
         assert!(!is_identifier("123foo"));
     }
 
